@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>暗面人格测试 · 你心里藏着哪一半</title>
+<style>
+  :root{
+    --text:#ece7f6;
+    --sub:rgba(236,231,246,.62);
+    --faint:rgba(236,231,246,.30);
+    --line:rgba(186,164,236,.14);
+    --accent:#b9a3e3;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    color:var(--text);
+    background:
+      radial-gradient(120% 90% at 15% 0%, #2c2142 0%, rgba(44,33,66,0) 55%),
+      radial-gradient(100% 80% at 95% 8%, #2a1f3e 0%, rgba(42,31,62,0) 50%),
+      radial-gradient(90% 70% at 50% 100%, #241a38 0%, rgba(36,26,56,0) 60%),
+      linear-gradient(170deg,#140f1f 0%,#1c1530 50%,#120e1c 100%);
+    background-attachment:fixed;
+    min-height:100vh;
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    padding:26px 16px 40px;
+    -webkit-font-smoothing:antialiased;
+  }
+  .app{width:100%;max-width:460px;}
+  .hidden{display:none !important;}
+
+  .card{
+    position:relative;
+    background:linear-gradient(180deg, rgba(255,255,255,.058), rgba(255,255,255,.026));
+    border:1px solid var(--line);
+    border-radius:26px;
+    padding:28px 22px 22px;
+    box-shadow:
+      0 24px 60px -28px rgba(0,0,0,.9),
+      0 2px 10px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.05);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+  }
+
+  /* ---------- 首页 ---------- */
+  .badge{
+    display:inline-block;
+    font-size:11px;letter-spacing:.16em;
+    color:#c3b0ea;
+    padding:6px 12px;border-radius:999px;
+    background:rgba(170,140,230,.12);
+    border:1px solid rgba(186,164,236,.2);
+  }
+  h1{
+    font-size:27px;font-weight:600;letter-spacing:.02em;
+    margin:16px 0 14px;line-height:1.35;
+    background:linear-gradient(120deg,#f2ecff,#c7b2ee 58%,#a98fd8);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lead{font-size:14px;line-height:1.95;color:var(--sub);}
+  .meta{
+    display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+    font-size:12px;color:var(--faint);letter-spacing:.05em;
+    margin:20px 0 22px;
+  }
+  .meta i{font-style:normal;color:rgba(186,164,236,.35);}
+
+  /* ---------- 按钮 ---------- */
+  .btn{
+    width:100%;border:none;border-radius:16px;
+    padding:15px 18px;
+    font-size:15px;font-weight:500;font-family:inherit;
+    letter-spacing:.05em;cursor:pointer;
+    transition:transform .18s ease, opacity .18s ease, box-shadow .18s ease, background .2s ease;
+  }
+  .btn.primary{
+    color:#191227;
+    background:linear-gradient(120deg,#d5c5f6,#b49de8 55%,#9b83d6);
+    box-shadow:0 14px 32px -16px rgba(160,130,230,.9);
+  }
+  .btn.primary:active{transform:scale(.985);}
+  .btn.ghost{
+    color:rgba(236,231,246,.82);
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(186,164,236,.18);
+  }
+  .btn.ghost:active{transform:scale(.985);background:rgba(255,255,255,.08);}
+  .btn:disabled{opacity:.3;cursor:not-allowed;box-shadow:none;transform:none;}
+
+  .foot{
+    margin-top:18px;text-align:center;
+    font-size:11px;color:rgba(236,231,246,.26);
+    letter-spacing:.08em;
+  }
+
+  /* ---------- 答题区 ---------- */
+  .progress-top{
+    display:flex;justify-content:space-between;align-items:center;
+    font-size:12px;color:rgba(236,231,246,.5);letter-spacing:.1em;
+  }
+  .bar{
+    height:4px;border-radius:99px;
+    background:rgba(255,255,255,.07);
+    margin:11px 0 24px;overflow:hidden;
+  }
+  #barFill{
+    height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,#8a72c8,#c9b0f5);
+    transition:width .35s ease;
+  }
+  .question{
+    font-size:17.5px;line-height:1.7;font-weight:500;
+    letter-spacing:.01em;color:#f1ecfb;
+    margin-bottom:18px;
+  }
+  .options{display:flex;flex-direction:column;gap:10px;}
+  .option{
+    display:flex;align-items:flex-start;gap:11px;
+    width:100%;text-align:left;
+    padding:14px 15px;border-radius:15px;
+    background:rgba(255,255,255,.038);
+    border:1px solid rgba(186,164,236,.13);
+    color:rgba(238,233,248,.82);
+    font-family:inherit;font-size:14px;line-height:1.6;
+    cursor:pointer;
+    transition:background .22s ease,border-color .22s ease,color .22s ease,box-shadow .22s ease;
+  }
+  .option .dot{
+    width:15px;height:15px;border-radius:50%;
+    border:1.5px solid rgba(186,164,236,.4);
+    flex:0 0 auto;margin-top:2px;position:relative;
+    transition:border-color .22s ease;
+  }
+  .option .txt{flex:1;}
+  .option.selected{
+    background:linear-gradient(120deg, rgba(170,138,235,.24), rgba(150,120,215,.13));
+    border-color:rgba(198,175,255,.55);
+    color:#f5f0ff;
+    box-shadow:
+      inset 0 0 0 1px rgba(198,175,255,.16),
+      0 10px 26px -18px rgba(160,130,230,.95);
+  }
+  .option.selected .dot{border-color:#d6c6f8;}
+  .option.selected .dot::after{
+    content:'';position:absolute;inset:3px;border-radius:50%;
+    background:#dccdff;
+  }
+
+  .nav{display:flex;gap:10px;margin-top:22px;}
+  .nav .btn{flex:1;padding:14px;}
+
+  .hint{
+    margin-top:12px;text-align:center;
+    font-size:12px;color:#c9a9f0;letter-spacing:.04em;
+    opacity:0;transition:opacity .25s ease;
+    min-height:16px;
+  }
+  .hint.show{opacity:1;}
+
+  /* ---------- 结果区 ---------- */
+  .res-label{
+    text-align:center;font-size:11.5px;letter-spacing:.22em;
+    color:rgba(200,180,245,.6);margin-bottom:12px;
+  }
+  .score-wrap{display:flex;align-items:baseline;justify-content:center;gap:2px;}
+  .score{
+    font-size:66px;font-weight:200;line-height:1;letter-spacing:-.03em;
+    background:linear-gradient(120deg,#f4eeff,#c3a9f2 55%,#9d84d9);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .unit{font-size:22px;font-weight:300;color:rgba(236,231,246,.5);}
+  .score-bar{
+    height:6px;border-radius:99px;background:rgba(255,255,255,.07);
+    margin:20px 0 28px;overflow:hidden;
+  }
+  #scoreFill{
+    height:100%;width:0;border-radius:99px;
+    background:linear-gradient(90deg,#8a72c8,#cbb2f7);
+    transition:width .9s cubic-bezier(.2,.8,.2,1);
+  }
+  .type-name{
+    font-size:22px;font-weight:600;text-align:center;
+    letter-spacing:.03em;color:#f3edfe;margin-bottom:10px;
+  }
+  .quote{
+    text-align:center;font-size:13.5px;line-height:1.8;
+    color:rgba(201,181,246,.86);margin-bottom:22px;
+  }
+  .divider{
+    height:1px;background:linear-gradient(90deg,transparent,rgba(186,164,236,.22),transparent);
+    margin:0 0 20px;
+  }
+  .desc{font-size:14px;line-height:2.05;color:rgba(236,231,246,.74);}
+  .tags{display:flex;flex-wrap:wrap;gap:8px;margin:22px 0 6px;}
+  .tag{
+    font-size:11.5px;padding:6px 11px;border-radius:999px;
+    color:#c9b6ee;
+    background:rgba(170,140,230,.12);
+    border:1px solid rgba(186,164,236,.18);
+    letter-spacing:.03em;
+  }
+  .result-actions{margin-top:24px;}
+
+  /* ---------- 过渡 ---------- */
+  @keyframes fadeUp{
+    from{opacity:0;transform:translateY(7px);}
+    to{opacity:1;transform:translateY(0);}
+  }
+  .fade{animation:fadeUp .3s ease both;}
+  @media (prefers-reduced-motion: reduce){
+    .fade{animation:none;}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ========== 首页 ========== -->
+  <section id="intro" class="card">
+    <span class="badge">心理测试 · 娱乐向</span>
+    <h1>暗面人格测试<br>你心里藏着哪一半</h1>
+    <p class="lead">
+      每个人心里都住着一点不太敢承认的私心。<br>
+      那些没说出口的比较、试探、占有欲和留一手，<br>
+      其实都在悄悄决定你怎么爱人。
+    </p>
+    <div class="meta">
+      <span>50 道题</span><i>·</i>
+      <span>约 5 分钟</span><i>·</i>
+      <span>15 种人格结果</span>
+    </div>
+    <button id="startBtn" class="btn primary">开始测试</button>
+    <p class="foot">仅供娱乐 · 不作专业心理诊断</p>
+  </section>
+
+  <!-- ========== 答题区 ========== -->
+  <section id="quiz" class="card hidden">
+    <div class="progress-top">
+      <span id="qIndex">01 / 50</span>
+      <span id="progressText">0%</span>
+    </div>
+    <div class="bar"><div id="barFill"></div></div>
+
+    <h2 id="qText" class="question">题目</h2>
+    <div id="options" class="options"></div>
+
+    <div class="nav">
+      <button id="prevBtn" class="btn ghost">上一题</button>
+      <button id="nextBtn" class="btn primary">下一题</button>
+    </div>
+    <p id="hint" class="hint"></p>
+    <p class="foot">仅供娱乐 · 不作专业心理诊断</p>
+  </section>
+
+  <!-- ========== 结果区 ========== -->
+  <section id="result" class="card hidden">
+    <p class="res-label">你的暗面指数</p>
+    <div class="score-wrap">
+      <span id="scoreNum" class="score">0</span>
+      <span class="unit">%</span>
+    </div>
+    <div class="score-bar"><div id="scoreFill"></div></div>
+
+    <h2 id="typeName" class="type-name"></h2>
+    <p id="typeQuote" class="quote"></p>
+    <div class="divider"></div>
+    <p id="typeDesc" class="desc"></p>
+    <div id="tags" class="tags"></div>
+
+    <div class="result-actions">
+      <button id="restartBtn" class="btn ghost">重新测一次</button>
+    </div>
+    <p class="foot">仅供娱乐 · 不作专业心理诊断</p>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   题库：50 题，每题 4 个选项，分值 1~4（越大越"暗"）
+   ========================================================= */
+const QUESTIONS = [
+  { q:"朋友兴奋地告诉你她的好消息，你的第一反应是？", opts:[
+    ["真心替她开心，还帮她张罗起来",1],
+    ["先恭喜，然后想起自己那点不顺",2],
+    ["心里咯噔一下，嘴上说“太好了”",3],
+    ["表面开心，回去默默比较了很久",4]]},
+
+  { q:"你手机里还留着前任的联系方式吗？", opts:[
+    ["早删干净了",1],
+    ["留着，但从来不点开",2],
+    ["留着，偶尔翻一下",3],
+    ["留着，还暗暗希望有一天能收到消息",4]]},
+
+  { q:"恋爱中，你会让对方知道自己的全部行程吗？", opts:[
+    ["会，没什么好藏的",1],
+    ["大概说一下",2],
+    ["只说必要的部分",3],
+    ["会留一块完全属于自己的时间，不解释",4]]},
+
+  { q:"对方问“你在想什么”，而你刚好在想别的异性，你会？", opts:[
+    ["实话实说",1],
+    ["含糊过去",2],
+    ["说“在想你”",3],
+    ["编一个合理的答案，顺便转移话题",4]]},
+
+  { q:"吵架后对方先低头，你心里会？", opts:[
+    ["松了口气，赶紧和好",1],
+    ["有点开心",2],
+    ["有种“果然还是我先赢”的满足",3],
+    ["暗暗记下：这次是我赢了",4]]},
+
+  { q:"刷到别人在朋友圈秀恩爱，你会？", opts:[
+    ["点个赞，送个祝福",1],
+    ["直接划过去",2],
+    ["心想“这能撑多久”",3],
+    ["截图下来，跟自己那段比一比",4]]},
+
+  { q:"你有过“只说一半真话”的时候吗？", opts:[
+    ["基本没有",1],
+    ["偶尔，为了省事",2],
+    ["经常，全说出来太麻烦",3],
+    ["我擅长让真话听起来是另一个意思",4]]},
+
+  { q:"朋友的对象条件很好，你的第一反应是？", opts:[
+    ["替她高兴",1],
+    ["有点羡慕",2],
+    ["“她凭什么”",3],
+    ["会想，如果我早点认识他呢",4]]},
+
+  { q:"对方说“我需要一点空间”，你会？", opts:[
+    ["尊重他，给他空间",1],
+    ["有点不安，但会等",2],
+    ["开始在心里排练分手台词",3],
+    ["立刻去做一件让他更不安的事",4]]},
+
+  { q:"你有没有偷偷看过对方的手机？", opts:[
+    ["没有，做不出来",1],
+    ["想过，但没做",2],
+    ["看过一次",3],
+    ["经常看，只是没被发现",4]]},
+
+  { q:"下面这些，你更害怕哪一种？", opts:[
+    ["伤害别人",1],
+    ["被别人伤害",2],
+    ["被人看穿",3],
+    ["失去控制权",4]]},
+
+  { q:"分手时，你说的第一句话通常是？", opts:[
+    ["我们好好谈谈",1],
+    ["为什么",2],
+    ["我早就知道了",3],
+    ["好，那你以后别后悔",4]]},
+
+  { q:"有人喜欢你，而你不喜欢他，你会？", opts:[
+    ["明确拒绝",1],
+    ["委婉拒绝",2],
+    ["不拒绝也不接受",3],
+    ["享受这种感觉，留着当备用",4]]},
+
+  { q:"你希望对方的朋友圈里，有多少关于你？", opts:[
+    ["越多越好，没有也无所谓",1],
+    ["偶尔出现就行",2],
+    ["最好有，这样才安心",3],
+    ["必须有，而且要好看",4]]},
+
+  { q:"你曾经为了让对方吃醋，故意在社交平台做点什么吗？", opts:[
+    ["没有",1],
+    ["想过",2],
+    ["做过一次",3],
+    ["这是我的常用手段",4]]},
+
+  { q:"朋友向你倾诉秘密之后，你会？", opts:[
+    ["烂在肚子里",1],
+    ["只跟最信任的人提一句",2],
+    ["有合适的场合会当谈资",3],
+    ["会留着，说不定哪天用得上",4]]},
+
+  { q:"你觉得“让所有人都喜欢我”这件事重要吗？", opts:[
+    ["不重要",1],
+    ["有点重要",2],
+    ["很重要",3],
+    ["重要到我会演",4]]},
+
+  { q:"恋爱中，你更在意对方的？", opts:[
+    ["人品",1],
+    ["对我好不好",2],
+    ["条件",3],
+    ["能给我带来什么",4]]},
+
+  { q:"对方做了一件让你失望的事，你会？", opts:[
+    ["当场直接说",1],
+    ["忍着，等下次一起算",2],
+    ["冷着，让他自己发现",3],
+    ["在心里悄悄给他降级",4]]},
+
+  { q:"你有过“希望朋友过得好，但别比我好”的念头吗？", opts:[
+    ["没有，我真心希望她好",1],
+    ["有过一瞬",2],
+    ["有过，而且不止一次",3],
+    ["我承认，我希望她好，但别比我好",4]]},
+
+  { q:"你会在心里给别人打分吗？", opts:[
+    ["不会",1],
+    ["偶尔",2],
+    ["经常",3],
+    ["一直在算，还会随时更新",4]]},
+
+  { q:"对方晚回消息，你会？", opts:[
+    ["忙自己的事",1],
+    ["有点在意",2],
+    ["开始想最坏的可能",3],
+    ["故意也晾着他",4]]},
+
+  { q:"你说过“我没事”，但其实很有事吗？", opts:[
+    ["很少",1],
+    ["偶尔",2],
+    ["经常",3],
+    ["“我没事”是我的常用武器",4]]},
+
+  { q:"一段关系里，你最不愿意放弃的是？", opts:[
+    ["对方",1],
+    ["自己的空间",2],
+    ["被人爱着的感觉",3],
+    ["主动权",4]]},
+
+  { q:"你会为了维持形象而隐藏自己的真实情绪吗？", opts:[
+    ["不会，我很坦率",1],
+    ["会藏起一些",2],
+    ["会藏起很多",3],
+    ["我对外展示的那个人，和我本人不太一样",4]]},
+
+  { q:"你和朋友同时喜欢上一个人，你会？", opts:[
+    ["退出",1],
+    ["看对方的态度",2],
+    ["暗暗竞争",3],
+    ["用点小心机，但不明说",4]]},
+
+  { q:"看到讨厌的人过得不好，你会？", opts:[
+    ["没什么感觉",1],
+    ["有一点点快意",2],
+    ["心情能好上一整天",3],
+    ["会忍不住多看两眼",4]]},
+
+  { q:"你会在恋爱中“留一手”吗（比如不公开全部收入、计划）？", opts:[
+    ["不会，我很坦诚",1],
+    ["看情况",2],
+    ["会留一点",3],
+    ["一直留着，谁也不知道",4]]},
+
+  { q:"对方为你付出很多，你会？", opts:[
+    ["感激，并且回报",1],
+    ["感激，但觉得有一部分理所应当",2],
+    ["会想，他图什么",3],
+    ["会习惯，然后想要更多",4]]},
+
+  { q:"你有没有过“我不想一个人，哪怕我没那么喜欢他”的时候？", opts:[
+    ["没有",1],
+    ["有过一闪念",2],
+    ["有过",3],
+    ["我现在就在这样的关系里",4]]},
+
+  { q:"你更愿意承认自己有哪一面？", opts:[
+    ["善良",1],
+    ["自私",2],
+    ["嫉妒",3],
+    ["会算计",4]]},
+
+  { q:"被人夸的时候，你心里其实在想？", opts:[
+    ["好开心",1],
+    ["开心，但他没说到点上",2],
+    ["他是不是有什么目的",3],
+    ["他真好骗",4]]},
+
+  { q:"伴侣和异性朋友走得很近，你会？", opts:[
+    ["相信他",1],
+    ["心里不舒服，但不说",2],
+    ["开始留意他的一举一动",3],
+    ["用同样的方式让他难受",4]]},
+
+  { q:"你有过“如果他不主动，我宁愿错过”的念头吗？", opts:[
+    ["没有",1],
+    ["有过",2],
+    ["经常",3],
+    ["这就是我拿捏他的方式",4]]},
+
+  { q:"你怎么看待“诚实”这件事？", opts:[
+    ["是底线",1],
+    ["看情况",2],
+    ["有时候诚实是一种残忍",3],
+    ["诚实是一种选择，我可以不选",4]]},
+
+  { q:"对方在你面前哭了，你的第一反应是？", opts:[
+    ["心疼",1],
+    ["有点手足无措",2],
+    ["有点烦",3],
+    ["心想“这招我也会用”",4]]},
+
+  { q:"分手后，你会偷偷关注对方吗？", opts:[
+    ["不会",1],
+    ["偶尔",2],
+    ["会，尤其看他的新恋情",3],
+    ["会，而且希望他过得不太好",4]]},
+
+  { q:"对“赢”这件事，你的态度是？", opts:[
+    ["无所谓",1],
+    ["想赢，但不强求",2],
+    ["输了会难受很久",3],
+    ["可以输，但不能输给他",4]]},
+
+  { q:"你有没有为了不被拒绝，而先去拒绝别人？", opts:[
+    ["没有",1],
+    ["有过一次",2],
+    ["有过几次",3],
+    ["这好像已经成了我的习惯",4]]},
+
+  { q:"朋友向你借钱，你会？", opts:[
+    ["直接借",1],
+    ["借一点",2],
+    ["找个理由推掉",3],
+    ["借了，然后记在心里，以后用得上",4]]},
+
+  { q:"在一段关系里，你更害怕？", opts:[
+    ["孤独",1],
+    ["被背叛",2],
+    ["被看透",3],
+    ["失去掌控",4]]},
+
+  { q:"你有“试探对方底线”的习惯吗？", opts:[
+    ["没有",1],
+    ["偶尔",2],
+    ["会，我想知道他有多爱我",3],
+    ["会，我想知道他什么时候会走",4]]},
+
+  { q:"你会默默给对方减分，却从来不告诉他吗？", opts:[
+    ["不会",1],
+    ["偶尔",2],
+    ["经常",3],
+    ["减到不及格我就走，他还不明所以",4]]},
+
+  { q:"你曾经用眼泪达成过目的吗？", opts:[
+    ["没有",1],
+    ["有过一两次",2],
+    ["有过不少次",3],
+    ["我很清楚眼泪什么时候最好用",4]]},
+
+  { q:"别人夸你“人真好”，你心里会？", opts:[
+    ["挺开心的",1],
+    ["觉得被认可了",2],
+    ["觉得他们其实不懂我",3],
+    ["觉得他们太好骗了",4]]},
+
+  { q:"你更愿意和什么样的人做朋友？", opts:[
+    ["真诚的",1],
+    ["有趣的",2],
+    ["有用的",3],
+    ["好拿捏的",4]]},
+
+  { q:"如果没有人会知道，你会做一件小坏事吗（比如偷偷删掉对方和别人的聊天记录）？", opts:[
+    ["不会",1],
+    ["想过，但没做",2],
+    ["大概会",3],
+    ["会，反正没人知道",4]]},
+
+  { q:"你有过“我希望他离不开我”的念头吗？", opts:[
+    ["没有",1],
+    ["一点点",2],
+    ["有过",3],
+    ["这正是我一直在做的事",4]]},
+
+  { q:"你对“被爱”的渴望，更接近哪一种？", opts:[
+    ["被理解",1],
+    ["被照顾",2],
+    ["被需要",3],
+    ["被离不开",4]]},
+
+  { q:"测完这个测试，你希望自己是什么结果？", opts:[
+    ["越低越好，我想当个好人",1],
+    ["中等就好",2],
+    ["无所谓，我了解自己",3],
+    ["我希望高一点，至少说明我没在装",4]]}
+];
+
+/* =========================================================
+   15 种结果
+   ========================================================= */
+const TYPES = [
+  {
+    name:"清醒的好人",
+    quote:"我不是没有私心，只是把它收得很好。",
+    desc:"你会嫉妒、会记仇、会在心里默默给人打分，但你几乎不会把这些变成行动。你的阴暗面像一层薄薄的雾，风一吹就散了。你最大的软肋是：太怕自己变成坏人，所以常常委屈自己。真正让你累的从来不是别人，是你一直在跟自己的私心讲道理。",
+    tags:["理智自保","心里记账","嘴上大度"]
+  },
+  {
+    name:"温柔的自保者",
+    quote:"先保护自己，再谈爱别人。",
+    desc:"你懂得退让，但退让之前会先算好安全距离。你不会主动伤人，却也不会让自己吃亏。你的暗面是“留一手”——别人以为你已经交底，其实你口袋里永远还有一张牌。这不是坏，是被辜负过的人学会的本能。",
+    tags:["留一手","怕吃亏","看似松弛"]
+  },
+  {
+    name:"共情节能者",
+    quote:"我的温柔是有限额的。",
+    desc:"你的共情是真的，但它有开关。你会为在乎的人掏心掏肺，对不重要的人可以毫无波澜。你不觉得自己冷漠，只是明白能量有限。你的私心在于：你会悄悄评估“这个人值不值得”，然后才决定要不要付出。",
+    tags:["共情有开关","默默评估","边界感强"]
+  },
+  {
+    name:"恋爱剧本家",
+    quote:"对方还没开口，你已经在心里演完三集。",
+    desc:"你脑子里永远有一版理想剧情：他什么时候该回消息、什么语气、什么反应。一旦他偏离台词，你不会大吵，只会安静地失落，然后悄悄改写下集。你的暗面不是控制，是“希望事情按我想的来”。你从没逼过谁，只是心里那本剧本翻得太勤了。",
+    tags:["脑内小剧场","期待落空","不说出口"]
+  },
+  {
+    name:"安全距离控",
+    quote:"我永远给自己留一条退路。",
+    desc:"你不是不爱，只是从不全押。你的计划里永远有“如果分手了怎么办”这一条。你看起来松弛，其实时刻在算退路。你怕的从来不是失去谁，而是有一天发现，自己已经无路可退。",
+    tags:["永远留退路","不全力投入","怕失去选择权"]
+  },
+  {
+    name:"占有欲收藏家",
+    quote:"我可以不用，但不想被别人拿走。",
+    desc:"你对“我的”这两个字很敏感。你可以很久不理一个人，但看到他和别人聊得开心，心里立刻不舒服。你的占有欲不吵不闹，只是默默把人放进格子里。你不是想绑住谁，你只是受不了“他本来可以属于我，却属于别人”。",
+    tags:["我的东西","不吵不闹","心里不舒服"]
+  },
+  {
+    name:"情绪操盘手",
+    quote:"一句“没事”，比吵架更有用。",
+    desc:"你太懂情绪的用法了：什么时候冷淡、什么时候示弱、什么时候说一句“算了，你开心就好”。你不用吵架，就能让对方反思一整晚。你的暗面是——你享受这种不用出手就赢的感觉，也清楚这样久了，会把人耗干。",
+    tags:["以静制动","一句没事","享受掌控"]
+  },
+  {
+    name:"比较型恋爱者",
+    quote:"我嘴上说不在乎，心里在打分。",
+    desc:"你总在暗暗比较：他前任长什么样、朋友的对象做了什么、别人的恋爱是不是更甜。你从不承认自己在比，但心里有个表格，一直在更新。你的暗面不是贪心，是你太害怕自己“过得不值”。你想要的不是更好的人，是“我没有选错”的证据。",
+    tags:["暗地里打分","怕选错","要的是证明"]
+  },
+  {
+    name:"聪明的关系经营者",
+    quote:"感情也是一种资源。",
+    desc:"你不排斥爱情，但你更相信“感情要落到现实”。你喜欢有光环、有能力、能带你往前走的人，这不丢人。你的私心是：你会计算一段关系能带来什么。你从不假装清高，只是偶尔会想——如果他什么都没有，我还会这么喜欢他吗？",
+    tags:["现实优先","欣赏光环","不装清高"]
+  },
+  {
+    name:"试探成瘾者",
+    quote:"我想知道他到底有多爱我，所以我先消失一下。",
+    desc:"你有很多小测试：故意晚回消息、说一句模棱两可的话、假装不在意。你想看的不是答案，是他的反应。你的暗面是——你把爱当成了一场需要反复验证的实验。可你要知道，被试探多了的人，最后不是更爱你，是更累。",
+    tags:["小测试","看反应","爱要验证"]
+  },
+  {
+    name:"被动攻击家",
+    quote:"我不吵架，但我会让你难受。",
+    desc:"你不喜欢正面冲突，你的武器是冷处理、是阴阳、是“随便你”。别人说你脾气好，只有当事人知道你有多难哄。你的暗面在于：你用沉默惩罚别人，还让对方说不出你哪里不对。这种赢法，爽，但孤独。",
+    tags:["冷处理","阴阳怪气","赢了但孤独"]
+  },
+  {
+    name:"深情操控者",
+    quote:"“我这么爱你”，是我最顺手的绳子。",
+    desc:"你爱得浓烈，也爱得让人喘不过气。你会用付出、用委屈、用“我为你做了这么多”让对方无法离开。你不是故意的，你只是太害怕被辜负。可当爱变成筹码，对方留下的理由，就不再是因为爱你了。",
+    tags:["以爱为绳","付出是筹码","怕被辜负"]
+  },
+  {
+    name:"共依存捕手",
+    quote:"我怕的不是一个人，是没人需要我。",
+    desc:"你很容易把一个人当成全世界。他开心你就开心，他冷淡你就塌了。你会把自己塑造成“离不开他”的样子，也希望他离不开你。你的暗面是：你享受那种“被需要到不能没有我”的位置，哪怕这段关系已经让你很痛。",
+    tags:["怕被丢下","情绪捆绑","被需要上瘾"]
+  },
+  {
+    name:"温柔独裁者",
+    quote:"我都是为你好。",
+    desc:"你从不强硬，但你能让事情按你的意思走。你用关心、用安排、用“我懂你”，慢慢接管对方的生活。你真心觉得自己在帮他，可你受不了他有你不知道的秘密，也受不了他不听你的。你不是坏，你只是无法容忍失控。",
+    tags:["为你好","慢慢接管","无法容忍失控"]
+  },
+  {
+    name:"暗面收藏家",
+    quote:"我清楚自己每一分私心，而且不打算改。",
+    desc:"你几乎能看透人性的每一层，也能熟练地使用它：什么时候示弱，什么时候抽身，什么时候让对方主动。你不是冲动型的坏人，你是清醒型的利己主义者。你的可怕之处不在于暗，而在于你知道自己在暗，还游刃有余。偶尔，也允许自己笨一次吧。",
+    tags:["清醒利己","看透人性","游刃有余"]
+  }
+];
+
+/* =========================================================
+   逻辑
+   ========================================================= */
+const TOTAL = QUESTIONS.length;
+const state = { idx: 0, answers: new Array(TOTAL).fill(null) };
+
+const introEl    = document.getElementById('intro');
+const quizEl     = document.getElementById('quiz');
+const resultEl   = document.getElementById('result');
+
+const qIndexEl   = document.getElementById('qIndex');
+const progTxtEl  = document.getElementById('progressText');
+const barFillEl  = document.getElementById('barFill');
+const qTextEl    = document.getElementById('qText');
+const optionsEl  = document.getElementById('options');
+const prevBtn    = document.getElementById('prevBtn');
+const nextBtn    = document.getElementById('nextBtn');
+const hintEl     = document.getElementById('hint');
+
+const scoreNumEl = document.getElementById('scoreNum');
+const scoreFillEl= document.getElementById('scoreFill');
+const typeNameEl = document.getElementById('typeName');
+const typeQuoteEl= document.getElementById('typeQuote');
+const typeDescEl = document.getElementById('typeDesc');
+const tagsEl     = document.getElementById('tags');
+
+let hintTimer = null;
+
+function replayAnim(el){
+  el.classList.remove('fade');
+  void el.offsetWidth;
+  el.classList.add('fade');
+}
+
+function showHint(msg){
+  hintEl.textContent = msg;
+  hintEl.classList.add('show');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(()=> hintEl.classList.remove('show'), 2200);
+}
+
+function updateProgress(){
+  const done = state.answers.filter(v => v !== null).length;
+  const pct = Math.round(done / TOTAL * 100);
+  progTxtEl.textContent = pct + '%';
+  barFillEl.style.width = pct + '%';
+}
+
+function updateNav(){
+  prevBtn.disabled = state.idx === 0;
+  const answered = state.answers[state.idx] !== null;
+  nextBtn.disabled = !answered;
+  nextBtn.textContent = (state.idx === TOTAL - 1) ? '提交答案' : '下一题';
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[state.idx];
+
+  qIndexEl.textContent = String(state.idx + 1).padStart(2,'0') + ' / ' + TOTAL;
+  updateProgress();
+
+  qTextEl.textContent = q.q;
+  optionsEl.innerHTML = '';
+
+  q.opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'option' + (state.answers[state.idx] === i ? ' selected' : '');
+
+    const dot = document.createElement('span');
+    dot.className = 'dot';
+
+    const txt = document.createElement('span');
+    txt.className = 'txt';
+    txt.textContent = opt[0];
+
+    btn.appendChild(dot);
+    btn.appendChild(txt);
+
+    btn.addEventListener('click', () => {
+      state.answers[state.idx] = i;
+      Array.from(optionsEl.children).forEach((c, ci) => {
+        c.classList.toggle('selected', ci === i);
+      });
+      updateNav();
+      updateProgress();
+    });
+
+    optionsEl.appendChild(btn);
+  });
+
+  updateNav();
+  replayAnim(qTextEl);
+  replayAnim(optionsEl);
+}
+
+function nextQuestion(){
+  if (state.answers[state.idx] === null) return;
+
+  if (state.idx < TOTAL - 1){
+    state.idx++;
+    renderQuestion();
+  } else {
+    submit();
+  }
+}
+
+function prevQuestion(){
+  if (state.idx > 0){
+    state.idx--;
+    renderQuestion();
+  }
+}
+
+function submit(){
+  const firstEmpty = state.answers.findIndex(v => v === null);
+  if (firstEmpty !== -1){
+    state.idx = firstEmpty;
+    renderQuestion();
+    showHint('还有题目没作答哦，先补上这一题～');
+    return;
+  }
+
+  // 计分：每题 1~4 分，总分 50~200
+  let total = 0;
+  state.answers.forEach((a, i) => {
+    total += QUESTIONS[i].opts[a][1];
+  });
+
+  // 映射为暗面指数：40 ~ 100（均值约 70，整体偏高，符合"人人都有暗面"）
+  let percent = Math.round(40 + (total - 50) * 0.4);
+  percent = Math.max(40, Math.min(100, percent));
+
+  // 每 4 个百分点对应一种人格，共 15 种
+  let typeIdx = Math.floor((percent - 40) / 4);
+  typeIdx = Math.max(0, Math.min(TYPES.length - 1, typeIdx));
+  const type = TYPES[typeIdx];
+
+  // 渲染结果
+  scoreNumEl.textContent = percent;
+  typeNameEl.textContent = type.name;
+  typeQuoteEl.textContent = '「' + type.quote + '」';
+  typeDescEl.textContent = type.desc;
+  tagsEl.innerHTML = type.tags.map(t => '<span class="tag">' + t + '</span>').join('');
+
+  quizEl.classList.add('hidden');
+  resultEl.classList.remove('hidden');
+  replayAnim(resultEl);
+
+  scoreFillEl.style.width = '0%';
+  setTimeout(() => { scoreFillEl.style.width = percent + '%'; }, 120);
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function restart(){
+  state.idx = 0;
+  state.answers = new Array(TOTAL).fill(null);
+  scoreFillEl.style.width = '0%';
+  resultEl.classList.add('hidden');
+  introEl.classList.remove('hidden');
+  replayAnim(introEl);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ---------- 事件绑定 ---------- */
+document.getElementById('startBtn').addEventListener('click', () => {
+  introEl.classList.add('hidden');
+  quizEl.classList.remove('hidden');
+  replayAnim(quizEl);
+  renderQuestion();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+prevBtn.addEventListener('click', prevQuestion);
+nextBtn.addEventListener('click', nextQuestion);
+document.getElementById('restartBtn').addEventListener('click', restart);
+</script>
+</body>
+</html>
